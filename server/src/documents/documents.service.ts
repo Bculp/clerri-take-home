@@ -1,21 +1,13 @@
-import { ConflictException, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Document } from './document.model';
 import { DocumentsStore } from './documents.store';
 
 @Injectable()
-export class DocumentsService implements OnModuleInit {
-  private documentsCache: Document[] = [];
-
+export class DocumentsService {
   constructor(private readonly store: DocumentsStore) {}
 
-  // The list endpoint is hit on every page load and the document set is small,
-  // so we keep a ready-to-serve copy in memory instead of rebuilding it per request.
-  onModuleInit(): void {
-    this.documentsCache = this.store.all();
-  }
-
   async findAll(): Promise<Document[]> {
-    return this.documentsCache;
+    return this.store.all();
   }
 
   async create(title: string): Promise<Document> {
