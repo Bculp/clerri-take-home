@@ -1,0 +1,117 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1c1f23;
+  background: #f6f7f9;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+h1 {
+  font-size: 22px;
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  padding: 8px 14px;
+  border: 1px solid #c9cdd3;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button.danger:not(:disabled) {
+  border-color: #b4232a;
+  color: #b4232a;
+}
+
+.create-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 16px;
+}
+
+.create-form input {
+  font: inherit;
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #c9cdd3;
+  border-radius: 6px;
+}
+
+.status {
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #e2e5e9;
+}
+
+.status.error {
+  border-color: #f0b7ba;
+  background: #fdf3f3;
+  color: #8c1c22;
+}
+
+table.documents {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #e2e5e9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.documents th,
+.documents td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef0f2;
+  font-size: 14px;
+}
+
+.documents th {
+  background: #fafbfc;
+  font-weight: 600;
+}
+
+.documents tr.selected td {
+  background: #f2f7fd;
+}
+
+.checkbox-cell {
+  width: 36px;
+}
+
+.muted {
+  color: #6b7280;
+}
+
+.lock {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fdf1e3;
+  color: #8a5a12;
+  font-size: 12px;
+}

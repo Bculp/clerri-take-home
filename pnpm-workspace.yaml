@@ -1,0 +1,9 @@
+packages:
+  - server
+  - client
+
+# esbuild (via Vite) needs its postinstall step to link the platform binary.
+allowBuilds:
+  esbuild: true
+onlyBuiltDependencies:
+  - esbuild

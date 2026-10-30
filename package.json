@@ -1,0 +1,13 @@
+{
+  "name": "document-manager",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n server,client -c cyan,magenta \"pnpm --filter server dev\" \"pnpm --filter client dev\"",
+    "build": "pnpm --filter server build && pnpm --filter client build",
+    "test": "pnpm --filter server test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
