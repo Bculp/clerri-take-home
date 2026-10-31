@@ -34,7 +34,7 @@ describe('DocumentsService', () => {
   });
 
   it('deletes an unlocked document', async () => {
-    await service.delete('doc-01');
+    await service.bulkDelete(['doc-01']);
 
     expect(store.findById('doc-01')).toBeUndefined();
     expect(store.all()).toHaveLength(19);

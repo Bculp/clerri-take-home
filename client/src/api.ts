@@ -1,3 +1,12 @@
+export class ApiError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
 async function request(path: string, init?: RequestInit): Promise<any> {
   const response = await fetch(path, {
     headers: { 'Content-Type': 'application/json' },
@@ -5,7 +14,7 @@ async function request(path: string, init?: RequestInit): Promise<any> {
   });
 
   if (!response.ok) {
-    throw new Error(`Request to ${path} failed with status ${response.status}`);
+    throw new ApiError(response.status, `Request to ${path} failed with status ${response.status}`);
   }
 
   return response.json();

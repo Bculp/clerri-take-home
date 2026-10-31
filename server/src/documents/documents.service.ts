@@ -1,38 +1,35 @@
-import { ConflictException, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Document } from './document.model';
 import { DocumentsStore } from './documents.store';
 
 @Injectable()
-export class DocumentsService implements OnModuleInit {
-  private documentsCache: Document[] = [];
-
+export class DocumentsService {
   constructor(private readonly store: DocumentsStore) {}
 
-  // The list endpoint is hit on every page load and the document set is small,
-  // so we keep a ready-to-serve copy in memory instead of rebuilding it per request.
-  onModuleInit(): void {
-    this.documentsCache = this.store.all();
-  }
-
   async findAll(): Promise<Document[]> {
-    return this.documentsCache;
+    return this.store.all();
   }
 
   async create(title: string): Promise<Document> {
     return this.store.insert(title);
   }
 
-  async delete(id: string): Promise<void> {
-    const document = this.store.findById(id);
+  async bulkDelete(ids: string[]): Promise<void> {
+    const documents = ids.map((id) => this.store.findById(id));
 
-    if (!document) {
-      throw new NotFoundException(`Document ${id} not found`);
+    const missingIds = ids.filter((_, index) => !documents[index]);
+    if (missingIds.length > 0) {
+      throw new NotFoundException({ message: 'Some documents were not found', missingIds });
     }
 
-    if (document.lockedBy !== null) {
-      throw new ConflictException(`Document ${id} is locked by ${document.lockedBy}`);
+    const found = documents.filter((doc): doc is Document => doc !== undefined);
+    const lockedIds = found.filter((doc) => doc.lockedBy !== null).map((doc) => doc.id);
+    if (lockedIds.length > 0) {
+      throw new ConflictException({ message: 'Some documents are locked', lockedIds });
     }
 
-    this.store.remove(id);
+    for (const id of ids) {
+      this.store.remove(id);
+    }
   }
 }
