@@ -14,17 +14,22 @@ export class DocumentsService {
     return this.store.insert(title);
   }
 
-  async delete(id: string): Promise<void> {
-    const document = this.store.findById(id);
+  async bulkDelete(ids: string[]): Promise<void> {
+    const documents = ids.map((id) => this.store.findById(id));
 
-    if (!document) {
-      throw new NotFoundException(`Document ${id} not found`);
+    const missingIds = ids.filter((_, index) => !documents[index]);
+    if (missingIds.length > 0) {
+      throw new NotFoundException({ message: 'Some documents were not found', missingIds });
     }
 
-    if (document.lockedBy !== null) {
-      throw new ConflictException(`Document ${id} is locked by ${document.lockedBy}`);
+    const found = documents.filter((doc): doc is Document => doc !== undefined);
+    const lockedIds = found.filter((doc) => doc.lockedBy !== null).map((doc) => doc.id);
+    if (lockedIds.length > 0) {
+      throw new ConflictException({ message: 'Some documents are locked', lockedIds });
     }
 
-    this.store.remove(id);
+    for (const id of ids) {
+      this.store.remove(id);
+    }
   }
 }

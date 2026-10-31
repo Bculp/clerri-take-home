@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import CreateDocumentForm from './CreateDocumentForm';
+import DeleteConfirmDialog from './DeleteConfirmDialog';
 import DocumentList from './DocumentList';
-import { bulkDeleteDocuments, createDocument, fetchDocuments } from './api';
+import { ApiError, bulkDeleteDocuments, createDocument, fetchDocuments } from './api';
 import type { Doc } from './types';
 
 const GENERIC_ERROR = 'Something went wrong. Please try again.';
+const LOCKED_ERROR = 'Some documents were locked before the delete occurred. Nothing was deleted.';
 
 export default function App() {
   const [documents, setDocuments] = useState<Doc[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -37,16 +40,17 @@ export default function App() {
     }
   };
 
-  const handleDeleteSelected = async () => {
-    if (!window.confirm(`Delete ${selectedIds.length} document(s)? This cannot be undone.`)) {
-      return;
-    }
-
+  const handleDeleteSelected = () => {
     setError(null);
+    setConfirmingDelete(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setConfirmingDelete(false);
     try {
       await bulkDeleteDocuments(selectedIds);
-    } catch {
-      setError(GENERIC_ERROR);
+    } catch (err) {
+      setError(err instanceof ApiError && err.status === 409 ? LOCKED_ERROR : GENERIC_ERROR);
     } finally {
       setSelectedIds([]);
       await load();
@@ -77,6 +81,14 @@ export default function App() {
           documents={documents}
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
+        />
+      )}
+
+      {confirmingDelete && (
+        <DeleteConfirmDialog
+          documents={documents.filter((doc) => selectedIds.includes(doc.id))}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmingDelete(false)}
         />
       )}
     </main>
