@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 
 const MAX_BULK_DELETE_IDS = 100;
@@ -18,6 +18,7 @@ export class DocumentsController {
   }
 
   @Post('bulk-delete')
+  @HttpCode(200)
   async bulkDelete(@Body() dto: { ids?: unknown } | undefined) {
     const ids = dto?.ids;
 
